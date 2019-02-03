@@ -6,7 +6,11 @@
 ```
 python3 -m virtualenv env
 . ./env/bin/activate 
-pip3 install -r Pipfile.lock
+pipenv install
+```
+or
+```
+/bin/bash -x bootstrap.sh
 ```
 
 ## How to create a instruction:
