@@ -30,6 +30,7 @@ jobs:
           command: |
             export PATH=$PATH:$PY_PATH
             flake8 --exclude=./env/ .
+            . ./env/bin/activate
             python3 slk.py --help
 
 workflows:
