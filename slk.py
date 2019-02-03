@@ -10,6 +10,10 @@ table = PrettyTable()
 table.field_names = ["Server", "Task", "Command", "Status", "Exception"]
 
 
+__author__ = "Rondineli Gomes de Araujo"
+__version__ = "1.0.0"
+
+
 def check_succces(server, task, execution, stdin, stdout, stderr):
     status = "SUCCESS"
 
