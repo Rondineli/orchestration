@@ -1,4 +1,6 @@
 ## My orchestration tool
+[![CircleCI](https://circleci.com/gh/Rondineli/orchestration.svg?style=svg)](https://circleci.com/gh/Rondineli/orchestration)
+
 ### You must have python3 installed and pip3 check it [here](https://docs.python-guide.org/starting/install3/linux/)
 ### How to install it (be sure you are on the project dir - root level)
 ```
