@@ -1,0 +1,107 @@
+version: 1.0
+
+jobs:
+  templates:
+    - destination: "/etc/apache2/mods-available/dir.conf"
+      metadata:
+        sudo: true
+        owner: "root"
+        group: "root"
+        content:
+          template: "apache/dir.conf" 
+
+    - destination: "/etc/apache2/apache2.conf"
+      metadata:
+        sudo: true
+        owner: "root"
+        group: "root"
+        content:
+          template: "apache/apache2.conf"
+
+    - destination: "/var/www/hello_wolrd/html/index.php"
+      metadata:
+        sudo: true
+        owner: "root"
+        group: "root"
+        chmod: "755"
+        notify: "services:restart_apache"
+        content:
+          template: "php/hello.php"
+          vars:
+            version: 1.0.0
+      
+    - destination: "/var/www/hello_wolrd/html/index.html"
+      metadata:
+        sudo: true
+        owner: "root"
+        group: "root"
+        chmod: "755"
+        content: "<html><head><title>Apache2 - Challenge</title></head><body><h1>Success!  The webserver is working </h1></body></html>"
+
+    - destination: "/etc/apache2/sites-available/hello_wolrd.conf"
+      metadata:
+        sudo: true
+        owner: "root"
+        group: "root"
+        chmod: "755"
+        notify: "services:prepare-apache"
+        content:
+          template: "apache/hello.conf"
+
+  execute:
+    - name: "Start Apache2"
+      metadata:
+        sudo: true
+        shell: "service apache2 start"
+
+    - name: "Enable php5"
+      metadata:
+        sudo: true
+        shell: "a2dismod mpm_event && sudo a2enmod mpm_prefork && sudo a2enmod php5"
+ 
+    - name: "Restart Apache"
+      metadata:
+        sudo: true
+        shell: "service apache2 restart"
+
+    - name: "Curl to check if service is responding"
+      metadata:
+        shell: "curl -sv http://localhost 2>/dev/null && exit $?"
+        sudo: true
+
+
+  dirs:
+    - destination: "/var/www/hello_wolrd/html"
+      metadata:
+        sudo: true
+        owner: "root"
+        group: "root"
+        chmod: "755"
+
+  services:
+    - name: restart_apache
+      metadata:
+        shell: "sudo kill -9 $(ps aux |grep apache |awk '{print $2}') && sudo service apache2 start"
+        sudo: true
+
+    - name: prepare-apache
+      metadata:
+        shell: "a2ensite hello_wolrd.conf && sudo a2dissite 000-default.conf"
+        sudo: true
+
+  env_vars:
+    - DEBIAN_FRONTEND=noninteractive
+    
+  install:
+    - package: "apt-utils php5 libapache2-mod-php5"
+      metadata:
+        sudo: true
+
+    - package: apache2
+      metadata:
+        sudo: true
+
+  before_install:
+    - shell: "sudo apt-get update"
+      metadata:
+        sudo: true     
