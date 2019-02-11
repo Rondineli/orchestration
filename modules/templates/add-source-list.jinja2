@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+cat << EOH > /etc/apt/sourceis.list.d/{{ name_source }}
+{{ source_content }}
+EOH
+
+apt-get update -yq

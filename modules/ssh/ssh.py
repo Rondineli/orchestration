@@ -1,39 +1,40 @@
+import sys
 import paramiko
 
-
 class SshClient(object):
-    def __init__(self, host, host_port, user, host_key=None, password=None):
+    def __init__(self, host, host_port, user, host_key=None, password=None, **kwargs):
         self.host = host
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if host_key and not password:
+        self.kwargs = kwargs
+        self.host_port = host_port
+        self.user = user
+        self.host_key = host_key
+        self.password = password
+        self.connected = False
+        self.green = "\033[0;32m"
+        self.red = "\033[1;31m"
+        print("\33[32m Connected to the host: {} ".format(self.host))
+
+    @property
+    def is_connected(self):
+        return self.connected
+
+    def connect(self):
+        try:
             self.ssh.connect(
-                host,
-                username=user,
-                port=host_port,
-                key_filename=host_key
+                host=self.host,
+                username=self.user,
+                port=self.host_port,
+                key_filename=self.host_key,
+                password=self.password,
+                **self.kwargs
             )
-
-        if not host_key and password:
-            self.ssh.connect(
-                host,
-                port=host_port,
-                username=user,
-                password=password
-            )
-
-        if host_key and password:
-            self.ssh.connect(
-                host,
-                port=host_port,
-                username=user,
-                password=password,
-                key_filename=host_key
-            )
-
-        print("\033[1;32;40m Connected to host: {}  \n".format(self.host))
-
-    def get_connection(self):
+            self.connected = True
+            print("\033[0;32m Connected to the host: {}".format(self.host), end="")
+        except Exception as e:
+            self.connected = False
+            print("\033[1;31m Error to connect to the server: { - {}}".format(self.host, str(e)), end="")
         return self.ssh
 
     def open_sftp(self):
@@ -41,8 +42,7 @@ class SshClient(object):
         return self.sftp
 
     def exec(self, command=None):
-        stdin, stdout, stderr = self.ssh.exec_command(command)
-        return stdin, stdout, stderr
+        return self.ssh.exec_command(command)
 
     def close(self):
         self.ssh.close()

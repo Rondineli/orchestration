@@ -1,0 +1,16 @@
+#!/bin/bash
+
+service="{{ service }}"
+action="{{ action }}"
+set -e
+
+cm_systemctl=$(which systemctl)
+cm_service=$(which service)
+
+if [ -z "$cm_systemctl" ]; then
+	systemctl ${action} $service.service
+        systemctl is-active $service >/dev/null 2>&1 && exit 0 || exit 1
+else
+	service $service $action
+        service $service status >/dev/null 2>&1 && exit 0 || exit 1
+fi      

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+dir="{{ dir }}"
+owner="{{ owner }}"
+group="{{ group }}"
+chmod="{{ chmod }}"
+
+
+set -e
+
+mkdir -p $dir
+
+if [ -z "$group" ] && [ -z "$owner" ]; then
+	chown -R $owner:$group $dir
+fi
+
+if [ -z "$group" ] && [ ! -z "$owner" ]; then
+        chown -R $owner: $dir
+fi
+
+if [ -z "$chmod" ]; then
+	chmod $chmod $dir
+fi
